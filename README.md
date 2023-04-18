@@ -4,4 +4,4 @@
 # 注意点
 - 申请彩云天气开发 API https://dashboard.caiyunapp.com/user/sign_in/
 - 修改 ESP32C3 的分区表解决编译内存不足问题 https://www.cnblogs.com/manastudent/p/17202598.html
-
+- 简约款需要在 platformio.ini 中添加 build_flags 后才可以打印串口信息
