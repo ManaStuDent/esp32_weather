@@ -8,4 +8,4 @@
 - 修改 DrawPaper.cpp 中 `http.begin("https://api.caiyunapp.com/v2.6/" + weatherKey + "/weather?alert=false&dailysteps=7&hourlysteps=0");` 最后添加 &lang=en_US 可以将天气预报的语言设定为 English (设定后部分功能布局需要修改，请自行适配)
 
 # 效果
-![](https://images.cnblogs.com/cnblogs_com/manastudent/1792948/o_230418031916_%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20230418111859.jpg)
+![](https://images.cnblogs.com/cnblogs_com/manastudent/1792948/o_230427070030_Snipaste_2023-04-27_14-58-53.png)
