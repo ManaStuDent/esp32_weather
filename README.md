@@ -1,5 +1,5 @@
 # esp32_weather
-合宙 esp32c3 简约款 使用 platformio 开发墨水屏显示天气信息
+合宙 esp32c3 简约款 使用 platformio 开发墨水屏显示天气信息，效果图中的开发板可到小黄鱼中购买到。搜索用户名 Chengloong
 
 # 注意点
 - 申请彩云天气开发 API https://dashboard.caiyunapp.com/user/sign_in/
