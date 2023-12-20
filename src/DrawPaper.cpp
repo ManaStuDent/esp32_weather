@@ -415,8 +415,8 @@ void drawWeather()
     // Serial.println("skycons value " + skycons[i]["value"].as<String>());
 
     writeWeatherToPaper(i, eng2chz(skycons[i]["value"].as<String>()),
-                        String(temperatures[i]["max"].as<uint16_t>()),
-                        String(temperatures[i]["min"].as<uint16_t>()),
+                        String(temperatures[i]["max"].as<int16_t>()),
+                        String(temperatures[i]["min"].as<int16_t>()),
                         eng2chz(nightSkycons[i]["value"].as<String>()));
 
     writeIcon(skycons[i]["value"].as<String>(), i);
@@ -442,9 +442,9 @@ void drawWeather()
     writeRectToPaper(i, temperatures[i]["max"].as<String>(), temperatures[i]["min"].as<String>());
   }
 
-  uint16_t tempNow = JSON_CAIYUN["result"]["realtime"]["apparent_temperature"].as<uint16_t>();
+  int16_t tempNow = JSON_CAIYUN["result"]["realtime"]["apparent_temperature"].as<int16_t>();
   String textNow = eng2chz(JSON_CAIYUN["result"]["realtime"]["skycon"].as<String>());
-  uint16_t windScale = JSON_CAIYUN["result"]["realtime"]["wind"]["speed"].as<uint16_t>();
+  int16_t windScale = JSON_CAIYUN["result"]["realtime"]["wind"]["speed"].as<int16_t>();
   String aqi = JSON_CAIYUN["result"]["realtime"]["air_quality"]["description"]["chn"].as<String>();
 
   // 天气质量
