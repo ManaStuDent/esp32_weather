@@ -9,3 +9,8 @@
 
 # 效果
 ![](https://images.cnblogs.com/cnblogs_com/manastudent/1792948/o_230427070030_Snipaste_2023-04-27_14-58-53.png)
+
+
+# 日志
+- 增加 draw18HWeather() 方法，可以绘制 36 小时体感温度和天气 drawPapers() 方法中进行切换
+
