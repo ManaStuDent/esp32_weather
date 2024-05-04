@@ -656,6 +656,7 @@ void drawPapers()
   do
   {
     drawWeather();
+    // draw18HWeather();
   } while (display.nextPage());
   display.hibernate();
 
