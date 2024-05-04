@@ -381,6 +381,160 @@ String caculateWeekDay(String dateStr)
   return "";
 }
 
+void draw18HWeather()
+{
+  int hourlysteps = 24;
+  HTTPClient http;
+  http.begin("https://api.caiyunapp.com/v2.6/" + weatherKey + "/hourly?hourlysteps=" + String(hourlysteps));
+  Serial.println("[HTTP] GET...\n");
+  int httpCode = http.GET();
+  if (httpCode != 200)
+  {
+    display.clearScreen();
+    writeFont(0, 4, "http error...", u8g2_font_wqy16_t_gb2312);
+    writeFont(0, 24, "请点击刷新按钮", u8g2_font_wqy16_t_gb2312);
+    return;
+  }
+  String payload = http.getString();
+  http.end();
+  // Serial.println("payload " + payload);
+
+  deserializeJson(JSON_CAIYUN, payload);
+
+  String forecast_keypoint = JSON_CAIYUN["result"]["forecast_keypoint"];
+  writeFont(0, 0, forecast_keypoint, u8g2_font_wqy12_t_gb2312);
+
+  JsonArray precipitation = JSON_CAIYUN["result"]["hourly"]["precipitation"];               // 降水概率和降水量
+  JsonArray apparent_temperature = JSON_CAIYUN["result"]["hourly"]["apparent_temperature"]; // 体感温度
+  JsonArray skycon = JSON_CAIYUN["result"]["hourly"]["skycon"];                             // 天气现象
+  JsonArray pm25 = JSON_CAIYUN["result"]["hourly"]["air_quality"]["pm25"];                  // pm2.5
+
+  // 计算基础划线温度，比如最低 20 摄氏度，最高 30 摄氏度
+  int miniTemperature = 40;
+  for (int i = 0; i < hourlysteps; i++)
+  {
+    if (apparent_temperature[i]["value"].as<int>() < miniTemperature)
+    {
+      miniTemperature = apparent_temperature[i]["value"].as<int>();
+    }
+  }
+  Serial.println("miniTemperature " + String(miniTemperature));
+  miniTemperature = miniTemperature - 2; // 保留一些底部空间
+
+  int last_Temp = 0;       // 上一次体感温度
+  String last_skycon = ""; // 上一次天气文字
+  int passCount = 0;
+  for (int i = 0; i < hourlysteps; i++)
+  {
+    int time = apparent_temperature[i]["datetime"].as<String>().substring(11, 13).toInt();
+    // Serial.println("time " + String(time));
+    if (i != 0 && (time == 19 || time == 21 || time == 23 || time == 1 || time == 3 || time == 5))
+    {
+      passCount++;
+      continue;
+    }
+
+    // 判断下一个节点是否是需要跳过的
+    int time_next = apparent_temperature[i + 1]["datetime"].as<String>().substring(11, 13).toInt();
+    int next_setp = i + 1;
+    // Serial.println("time " + String(time));
+    if (time_next == 19 || time_next == 21 || time_next == 23 || time_next == 1 || time_next == 3 || time_next == 5)
+    {
+      next_setp = i + 2;
+    }
+    if (next_setp >= hourlysteps)
+    {
+      next_setp = hourlysteps - 1;
+    }
+
+    int xOffset = i - passCount; // x 坐标偏移量。当前循环次数 - 跳过的次数
+    Serial.println("xOffset " + String(xOffset));
+
+    int _apparent_temperature = (apparent_temperature[i]["value"].as<int>() - miniTemperature) * 4;
+
+    // 6/12/18/24 点明显一点作为时间标识
+    int circleR = 0;
+    if (time % 6 == 0)
+    {
+      circleR = 4;
+    }
+    else
+    {
+      circleR = 2;
+    }
+
+    // 体感温度小圆点 实心是晚上 6 点到早上 6 点
+    if (time >= 18 || time <= 6)
+    {
+      display.fillCircle(8 + 16 * xOffset, 128 - 20 - _apparent_temperature, circleR, GxEPD_BLACK);
+    }
+    else
+    {
+      display.drawCircle(8 + 16 * xOffset, 128 - 20 - _apparent_temperature, circleR, GxEPD_BLACK);
+    }
+
+    // 下一个节点的体感温度
+    int _apparent_temperature_next = (apparent_temperature[next_setp]["value"].as<int>() - miniTemperature) * 4;
+
+    // 体感温度折线
+    if (i != hourlysteps)
+    {
+      display.writeLine(8 + 16 * xOffset, 128 - 20 - _apparent_temperature,
+                        8 + 16 * (xOffset + 1), 128 - 20 - _apparent_temperature_next, GxEPD_BLACK);
+    }
+
+    // 温差大于 0.5 摄氏度才展示温度
+    if (abs(last_Temp - _apparent_temperature) >= 0.5)
+    {
+      last_Temp = _apparent_temperature;
+
+      // 体感温度展示
+      // 当前节点温度小于下一节点温度就在温度圆点下面展示温度 否则 在上面展示
+      if (_apparent_temperature < _apparent_temperature_next)
+      { // 下面
+        writeFont(4 + 16 * xOffset, 128 - 13 - _apparent_temperature, apparent_temperature[i]["value"].as<String>(), u8g2_font_5x7_tf);
+      }
+      else
+      { // 上面
+        writeFont(4 + 16 * xOffset, 128 - 32 - _apparent_temperature, apparent_temperature[i]["value"].as<String>(), u8g2_font_5x7_tf);
+      }
+    }
+
+    // 天气
+    String _skycon = eng2chz(skycon[i]["value"].as<String>());
+    // Serial.println("_skycon " + _skycon);
+
+    // 如果是雨雪天气，画矩形加强，两个温度之间存在一个三角形，画多个矩形，减少由于气温相差太多导致过度生硬
+    if (_skycon == "小雨" || _skycon == "中雨" || _skycon == "大雨" || _skycon == "暴雨" ||
+        _skycon == "小雪" || _skycon == "中雪" || _skycon == "大雪" || _skycon == "暴雪")
+    {
+      // temperatureDifference / 4    计算两个温度之间的 3 个点
+      int temperatureDifference = _apparent_temperature_next - _apparent_temperature;
+      display.writeLine(8 + 16 * xOffset, 128 - 20 - _apparent_temperature, 8 + 16 * xOffset, 128 - 25, GxEPD_BLACK);
+      display.writeLine(8 + 16 * xOffset + 4, 128 - 20 - _apparent_temperature - temperatureDifference / 4, 8 + 16 * xOffset + 4, 128 - 25, GxEPD_BLACK);
+      display.writeLine(8 + 16 * xOffset + 8, 128 - 20 - _apparent_temperature - temperatureDifference / 4 * 2, 8 + 16 * xOffset + 8, 128 - 25, GxEPD_BLACK);
+      display.writeLine(8 + 16 * xOffset + 12, 128 - 20 - _apparent_temperature - temperatureDifference / 4 * 3, 8 + 16 * xOffset + 12, 128 - 25, GxEPD_BLACK);
+    }
+
+    if (last_skycon != _skycon)
+    {
+      last_skycon = _skycon;
+      // 竖着显示2个天气字符
+      writeFont(8 + 16 * xOffset, 105, eng2chz_first(skycon[i]["value"].as<String>()), u8g2_font_wqy12_t_gb2312);
+      writeFont(8 + 16 * xOffset, 117, eng2chz_second(skycon[i]["value"].as<String>()), u8g2_font_wqy12_t_gb2312);
+    }
+    else
+    {
+      // 和前一个天气状况相等，如果是雨雪天气，展示下雨雪百分比
+      if (last_skycon == "小雨" || last_skycon == "中雨" || last_skycon == "大雨" || last_skycon == "暴雨" ||
+          last_skycon == "小雪" || last_skycon == "中雪" || last_skycon == "大雪" || last_skycon == "暴雪")
+      {
+        writeFont(8 + 16 * xOffset, 95, precipitation[i]["probability"].as<String>(), u8g2_font_wqy12_t_gb2312);
+      }
+    }
+  }
+}
+
 /*
   描绘天气情况
 */
