@@ -191,6 +191,223 @@ String eng2chz(String eng)
   return "无";
 }
 
+
+/*
+  英文天气变中文天气
+*/
+String eng2chz_first(String eng)
+{
+  if (eng == "CLEAR_DAY")
+  {
+    return "晴";
+  }
+
+  if (eng == "CLEAR_NIGHT")
+  {
+    return "晴";
+  }
+
+  if (eng == "PARTLY_CLOUDY_DAY")
+  {
+    return "多";
+  }
+
+  if (eng == "PARTLY_CLOUDY_NIGHT")
+  {
+    return "多";
+  }
+
+  if (eng == "CLOUDY")
+  {
+    return "阴";
+  }
+
+  if (eng == "LIGHT_HAZE")
+  {
+    return "轻";
+  }
+
+  if (eng == "MODERATE_HAZE")
+  {
+    return "中";
+  }
+
+  if (eng == "HEAVY_HAZE")
+  {
+    return "重";
+  }
+
+  if (eng == "LIGHT_RAIN")
+  {
+    return "小";
+  }
+
+  if (eng == "MODERATE_RAIN")
+  {
+    return "中";
+  }
+
+  if (eng == "HEAVY_RAIN")
+  {
+    return "大";
+  }
+
+  if (eng == "STORM_RAIN")
+  {
+    return "暴";
+  }
+
+  if (eng == "FOG")
+  {
+    return "雾";
+  }
+
+  if (eng == "LIGHT_SNOW")
+  {
+    return "小";
+  }
+
+  if (eng == "MODERATE_SNOW")
+  {
+    return "中";
+  }
+
+  if (eng == "HEAVY_SNOW")
+  {
+    return "大";
+  }
+
+  if (eng == "STORM_SNOW")
+  {
+    return "暴";
+  }
+
+  if (eng == "DUST")
+  {
+    return "浮";
+  }
+
+  if (eng == "SAND")
+  {
+    return "沙";
+  }
+
+  if (eng == "WIND")
+  {
+    return "大";
+  }
+
+  return "";
+}
+
+/*
+  英文天气变中文天气
+*/
+String eng2chz_second(String eng)
+{
+  if (eng == "CLEAR_DAY")
+  {
+    return "";
+  }
+
+  if (eng == "CLEAR_NIGHT")
+  {
+    return "";
+  }
+
+  if (eng == "PARTLY_CLOUDY_DAY")
+  {
+    return "云";
+  }
+
+  if (eng == "PARTLY_CLOUDY_NIGHT")
+  {
+    return "云";
+  }
+
+  if (eng == "CLOUDY")
+  {
+    return "";
+  }
+
+  if (eng == "LIGHT_HAZE")
+  {
+    return "度";
+  }
+
+  if (eng == "MODERATE_HAZE")
+  {
+    return "度";
+  }
+
+  if (eng == "HEAVY_HAZE")
+  {
+    return "度";
+  }
+
+  if (eng == "LIGHT_RAIN")
+  {
+    return "雨";
+  }
+
+  if (eng == "MODERATE_RAIN")
+  {
+    return "雨";
+  }
+
+  if (eng == "HEAVY_RAIN")
+  {
+    return "雨";
+  }
+
+  if (eng == "STORM_RAIN")
+  {
+    return "雨";
+  }
+
+  if (eng == "FOG")
+  {
+    return "";
+  }
+
+  if (eng == "LIGHT_SNOW")
+  {
+    return "雪";
+  }
+
+  if (eng == "MODERATE_SNOW")
+  {
+    return "雪";
+  }
+
+  if (eng == "HEAVY_SNOW")
+  {
+    return "雪";
+  }
+
+  if (eng == "STORM_SNOW")
+  {
+    return "雪";
+  }
+
+  if (eng == "DUST")
+  {
+    return "尘";
+  }
+
+  if (eng == "SAND")
+  {
+    return "尘";
+  }
+
+  if (eng == "WIND")
+  {
+    return "风";
+  }
+
+  return "";
+}
+
 /*
   画天气图标
 */
